@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEmail } from '../context/EmailContext';
+import emailTemplate from '../assets/email-template.jpg';
 import { 
   Box,
   Card,
@@ -295,75 +296,126 @@ const Dashboard = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Template Creation Section */}
-      <Box 
+      
+      <Box sx={{ width: '100%', maxWidth: '1200px', p: 3 }}>
+      <Typography 
+        variant="h2" 
         sx={{ 
-          display: 'grid', 
-          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, 
-          gap: 3, 
+          fontSize: '2.5rem', 
+          fontWeight: 'bold', 
+          color: '#6200ee',
           mb: 4 
         }}
       >
-        <Paper
-          elevation={0}
-          sx={{
-            p: 3,
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: 200,
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            '&:hover': {
-              transform: 'translateY(-4px)',
-              boxShadow: 2
-            }
-          }}
+        Create Templates
+      </Typography>
+
+      <Box 
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+          gap: 3,
+          maxWidth: '800px'
+        }}
+      >
+        {/* Create From Blank Card */}
+        <Card
           onClick={handleCreateNew}
-        >
-          <AddIcon sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
-          <Typography variant="h6" gutterBottom>
-            Create Blank Template
-          </Typography>
-          <Typography variant="body2" color="text.secondary" align="center">
-            Start from scratch with a blank template
-          </Typography>
-        </Paper>
-
-        <Paper
-          elevation={0}
           sx={{
-            p: 3,
-            borderRadius: 2,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            minHeight: 200,
+            height: '300px',
             cursor: 'pointer',
-            transition: 'all 0.2s',
-            background: 'linear-gradient(135deg, #4527a0 0%, #8e24aa 100%)',
-            color: 'white',
+            border: '2px solid #6200ee',
+            borderRadius: 2,
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            backgroundColor: 'transparent',
             '&:hover': {
               transform: 'translateY(-4px)',
-              boxShadow: 2
+              boxShadow: 3
             }
           }}
-          onClick={handleUseTemplate}
         >
-          <AddIcon sx={{ fontSize: 40, mb: 2 }} />
-          <Typography variant="h6" gutterBottom>
-            Use Template
+          <AddIcon 
+            sx={{ 
+              fontSize: 80, 
+              color: '#6200ee',
+              mb: 2 
+            }} 
+          />
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              fontWeight: 'bold',
+              color: '#000' 
+            }}
+          >
+            Create From Blank
           </Typography>
-          <Typography variant="body2" align="center">
-            Start with a pre-designed template
-          </Typography>
-        </Paper>
-      </Box>
+        </Card>
 
+        {/* Create From Template Card */}
+        <Card
+          onClick={handleUseTemplate}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '300px',
+            cursor: 'pointer',
+            border: '1px solid #e0e0e0',
+            borderRadius: 2,
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            position: 'relative',
+            overflow: 'hidden',
+            '&:hover': {
+              transform: 'translateY(-4px)',
+              boxShadow: 3
+            }
+          }}
+        >
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: `url(${emailTemplate})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              filter: 'brightness(0.9)'
+            }}
+          />
+          <Box
+            sx={{
+              position: 'relative',
+              zIndex: 1,
+              textAlign: 'center'
+            }}
+          >
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 'bold',
+                color: '#000',
+                backgroundColor: 'white',
+                px: 2,
+                py: 1,
+                borderRadius: 1
+              }}
+            >
+              Create From Template
+            </Typography>
+          </Box>
+        </Card>
+      </Box>
+    </Box>
+
+          {/* handleUseTemplate handleCreateNew */}
       {/* Search and Filters */}
       <Paper 
         elevation={0} 

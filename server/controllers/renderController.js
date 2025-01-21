@@ -24,7 +24,14 @@ export const downloadTemplate = async (req, res) => {
   try {
     const { data } = req.body;
     
-    const renderedHtml = await renderTemplate({ content: data }, data);
+    // Create a proper template structure to ensure styles are included
+    const templateStructure = {
+      sections: data.sections,
+      title: data.title,
+      footer: data.footer
+    };
+    
+    const renderedHtml = await renderTemplate(templateStructure, data);
     
     res.setHeader('Content-Type', 'text/html');
     res.setHeader('Content-Disposition', 'attachment; filename="rendered-template.html"');

@@ -24,12 +24,18 @@
             height: auto;
             display: block;
         }
-        .button {
+        .button-container {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .email-button {
             display: inline-block;
             text-decoration: none;
+            padding: 10px 20px;
+            min-width: 120px;
             text-align: center;
+            white-space: nowrap;
             border-radius: 4px;
-            margin: 10px 0;
         }
         .footer {
             margin-top: 30px;
@@ -45,21 +51,23 @@
         <h1>{{title}}</h1>
         
         {{#each sections}}
-            <div class="section" style="{{styleObject styles}}">
+            <div class="section">
                 {{#if (eq type "text")}}
-                    {{{content}}}
+                    <div style="{{styleObject styles}}">{{{content}}}</div>
                 {{/if}}
                 
                 {{#if (eq type "image")}}
-                    <img src="{{imageUrl}}" alt="Email content" style="{{styleObject styles}}">
+                    <div style="{{styleObject styles}}">
+                        <img src="{{imageUrl}}" alt="Email content">
+                    </div>
                 {{/if}}
                 
                 {{#if (eq type "button")}}
-                    <div style="text-align: center;">
+                    <div class="button-container" style="text-align: {{default (lookup styles 'textAlign') 'center'}}">
                         <a 
                             href="{{link}}" 
-                            class="button" 
-                            style="background-color: {{lookup styles 'backgroundColor'}}; color: {{lookup styles 'color'}}; padding: {{lookup styles 'padding'}}; border-radius: {{lookup styles 'borderRadius'}}; font-size: {{lookup styles 'fontSize'}}; display: inline-block; text-decoration: none;"
+                            class="email-button"
+                            style="background-color: {{default (lookup styles 'backgroundColor') '#3B82F6'}}; color: {{default (lookup styles 'color') '#ffffff'}}; font-size: {{default (lookup styles 'fontSize') '16px'}}; border-radius: {{default (lookup styles 'borderRadius') '4px'}};"
                         >
                             {{content}}
                         </a>

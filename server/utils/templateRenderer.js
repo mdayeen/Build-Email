@@ -27,11 +27,26 @@ const convertToAbsoluteUrl = (url) => {
   return `${baseUrl}/${cleanUrl}`;
 };
 
+// Register the default helper
+Handlebars.registerHelper('default', function(value, defaultValue) {
+  return value || defaultValue;
+});
+
 // Register a helper for style objects
 Handlebars.registerHelper('styleObject', function(styles) {
   if (!styles) return '';
+  
+  // Ensure textAlign is applied if present
+  if (styles.textAlign && !styles['text-align']) {
+    styles['text-align'] = styles.textAlign;
+  }
+  
   return Object.entries(styles)
-    .map(([key, value]) => `${key}:${value}`)
+    .map(([key, value]) => {
+      // Convert camelCase to kebab-case for CSS properties
+      const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+      return `${cssKey}:${value}`;
+    })
     .join(';');
 });
 
