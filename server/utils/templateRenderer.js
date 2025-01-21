@@ -3,8 +3,7 @@ import Handlebars from 'handlebars';
 import fs from 'fs/promises';
 import path from 'path';
 
-//just for the render hosting
-const renderUrl = "https://mailbackend-fjcy.onrender.com" 
+
 
 
 // Register the eq helper for comparisons
@@ -23,7 +22,7 @@ const convertToAbsoluteUrl = (url) => {
   if (url.startsWith('http://') || url.startsWith('https://')) return url;
   
   // Get the base URL from environment variable or use default
-  const baseUrl = renderUrl || process.env.BASE_URL || 'http://localhost:8000';
+  const baseUrl = process.env.BASE_URL || 'http://localhost:8000';
   
   // Remove any leading slashes from the URL
   const cleanUrl = url.replace(/^\/+/, '');
