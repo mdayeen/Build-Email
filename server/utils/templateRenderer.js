@@ -3,7 +3,7 @@ import Handlebars from 'handlebars';
 import fs from 'fs/promises';
 import path from 'path';
 
-
+// hosting setup done 
 
 
 // Register the eq helper for comparisons
