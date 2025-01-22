@@ -87,7 +87,8 @@ const handleApiError = (error) => {
 
 export const EmailProvider = ({ children }) => {
   const [state, dispatch] = useReducer(emailReducer, initialState);
-  const apiUrl = import.meta.env.VITE_API_URL;
+  // const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl = "https://ayeen.suhail.app/api";
 
   // console.log("API URL:", apiUrl);
   // Debugging line

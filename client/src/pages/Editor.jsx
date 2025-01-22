@@ -8,92 +8,16 @@ import {
   Box,
   Paper,
   Typography,
-  Button,
-  IconButton,
-  TextField,
-  InputLabel,
+  CircularProgress,
   Snackbar,
   Alert,
-  CircularProgress,
-  Tooltip,
-  Divider,
-  Grid,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Slider,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  InputAdornment,
 } from "@mui/material";
-import {
-  Add as AddIcon,
-  Image as ImageIcon,
-  Delete as DeleteIcon,
-  Close as CloseIcon,
-  Save as SaveIcon,
-  ArrowBack as ArrowBackIcon,
-  ExpandMore as ExpandMoreIcon,
-  FormatAlignLeft as FormatAlignLeftIcon,
-  FormatAlignCenter as FormatAlignCenterIcon,
-  FormatAlignRight as FormatAlignRightIcon,
-  Link as LinkIcon,
-} from "@mui/icons-material";
 
-// Constants
-const DEFAULT_STYLES = {
-  fontSize: "16px",
-  color: "#000000",
-  textAlign: "left",
-  backgroundColor: "#ffffff",
-  padding: "20px",
-  width: "100%",
-  borderRadius: "0px",
-  margin: "0px",
-};
-
-const BUTTON_DEFAULT_STYLES = {
-  ...DEFAULT_STYLES,
-  backgroundColor: "#2563eb",
-  color: "#ffffff",
-  padding: "12px 24px",
-  borderRadius: "4px",
-  width: "auto",
-  textAlign: "center",
-};
-
-const SECTION_TYPES = {
-  TEXT: "text",
-  IMAGE: "image",
-  BUTTON: "button",
-};
-
-const DEFAULT_TEMPLATE = {
-  title: "",
-  sections: [
-    {
-      type: SECTION_TYPES.TEXT,
-      content: "Welcome to your new email template!",
-      styles: {
-        ...DEFAULT_STYLES,
-        fontSize: "24px",
-        textAlign: "center",
-        padding: "20px",
-      },
-    },
-    {
-      type: SECTION_TYPES.TEXT,
-      content: "Start editing this template by adding or modifying sections.",
-      styles: {
-        ...DEFAULT_STYLES,
-        textAlign: "center",
-        padding: "15px",
-      },
-    },
-  ],
-  footer: " 2025 Your Company. All rights reserved.",
-};
+// Import new components
+import Section from "../components/editor/Section";
+import EditorHeader from "../components/editor/EditorHeader";
+import AddSectionButtons from "../components/editor/AddSectionButtons";
+import { DEFAULT_TEMPLATE, SECTION_TYPES, DEFAULT_STYLES, BUTTON_DEFAULT_STYLES } from "../components/editor/constants";
 
 const Editor = () => {
   const { id } = useParams();
@@ -141,9 +65,7 @@ const Editor = () => {
 
     data.sections?.forEach((section, index) => {
       if (section.type === SECTION_TYPES.BUTTON && !section.link?.trim()) {
-        newErrors.sections = `Button at position ${
-          index + 1
-        } requires a valid URL`;
+        newErrors.sections = `Button at position ${index + 1} requires a valid URL`;
       }
     });
 
@@ -158,10 +80,8 @@ const Editor = () => {
         if (id) {
           await fetchTemplate(id);
         } else if (location.state?.template) {
-          // Use the example template if provided
           setTemplate(location.state.template);
         } else {
-          // Use default template for blank templates
           setTemplate(DEFAULT_TEMPLATE);
         }
       } catch (error) {
@@ -176,13 +96,12 @@ const Editor = () => {
 
   useEffect(() => {
     if (currentTemplate && id) {
-      // Only set currentTemplate if we're editing an existing template
       setTemplate(currentTemplate);
       setLoading(false);
     }
   }, [currentTemplate, id]);
 
-  // Section Management
+  // Event Handlers
   const handleAddSection = (type) => {
     const newSection = {
       type,
@@ -262,6 +181,16 @@ const Editor = () => {
     }));
   };
 
+  const handleAccordionChange = (index) => {
+    setExpandedStyles(prev => {
+      if (prev.includes(index)) {
+        return prev.filter(i => i !== index);
+      } else {
+        return [...prev, index];
+      }
+    });
+  };
+
   // Save Handling
   const handleSave = async () => {
     try {
@@ -301,266 +230,6 @@ const Editor = () => {
     setNotification({ open: true, message, severity });
   };
 
-  const handleAccordionChange = (index) => {
-    setExpandedStyles(prev => {
-      if (prev.includes(index)) {
-        return prev.filter(i => i !== index);
-      } else {
-        return [...prev, index];
-      }
-    });
-  };
-
-  const StyleControls = ({ section, index, onStyleChange }) => {
-    const handleChange = (property, value) => {
-      onStyleChange(index, property, value);
-    };
-
-    return (
-      <Accordion 
-        expanded={expandedStyles.includes(index)}
-        onChange={() => handleAccordionChange(index)}
-        sx={{ '&.Mui-expanded': { margin: '0' } }}
-      >
-        <AccordionSummary 
-          expandIcon={<ExpandMoreIcon />}
-          sx={{ 
-            minHeight: '48px',
-            '&.Mui-expanded': { minHeight: '48px' },
-            '& .MuiAccordionSummary-content.Mui-expanded': { margin: '12px 0' }
-          }}
-        >
-          <Typography>Styling Options</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {/* Text Alignment */}
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Text Alignment
-              </Typography>
-              <RadioGroup
-                row
-                value={section.styles?.textAlign || 'left'}
-                onChange={(e) => handleChange('textAlign', e.target.value)}
-              >
-                <FormControlLabel
-                  value="left"
-                  control={<Radio size="small" />}
-                  label={<FormatAlignLeftIcon />}
-                />
-                <FormControlLabel
-                  value="center"
-                  control={<Radio size="small" />}
-                  label={<FormatAlignCenterIcon />}
-                />
-                <FormControlLabel
-                  value="right"
-                  control={<Radio size="small" />}
-                  label={<FormatAlignRightIcon />}
-                />
-              </RadioGroup>
-            </Box>
-
-            {/* Colors */}
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Colors
-              </Typography>
-              <Box display="flex" gap={2}>
-                <TextField
-                  label="Text Color"
-                  type="color"
-                  value={section.styles?.color || '#000000'}
-                  onChange={(e) => handleChange('color', e.target.value)}
-                  sx={{ width: '100px' }}
-                />
-                <TextField
-                  label="Background"
-                  type="color"
-                  value={section.styles?.backgroundColor || '#ffffff'}
-                  onChange={(e) => handleChange('backgroundColor', e.target.value)}
-                  sx={{ width: '100px' }}
-                />
-              </Box>
-            </Box>
-
-            {/* Font Size */}
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Font Size
-              </Typography>
-              <Box display="flex" gap={2} alignItems="center">
-                <Slider
-                  value={parseInt(section.styles?.fontSize) || 16}
-                  min={12}
-                  max={40}
-                  onChange={(_, value) => handleChange('fontSize', `${value}px`)}
-                  sx={{ flex: 1 }}
-                />
-                <Typography variant="body2" color="text.secondary" sx={{ minWidth: 30 }}>
-                  {parseInt(section.styles?.fontSize) || 16}px
-                </Typography>
-              </Box>
-            </Box>
-
-            {/* Padding */}
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Padding
-              </Typography>
-              <Box display="flex" gap={2}>
-                <TextField
-                  label="Padding"
-                  type="number"
-                  value={parseInt(section.styles?.padding) || 20}
-                  onChange={(e) => handleChange('padding', `${e.target.value}px`)}
-                  InputProps={{
-                    endAdornment: <InputAdornment position="end">px</InputAdornment>,
-                  }}
-                  size="small"
-                />
-              </Box>
-            </Box>
-
-            {/* Button-specific styles */}
-            {section.type === 'button' && (
-              <>
-                <Divider />
-                <Box>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Button Styles
-                  </Typography>
-                  <Box display="flex" flexDirection="column" gap={2}>
-                    <TextField
-                      label="Border Radius"
-                      type="number"
-                      value={parseInt(section.styles?.borderRadius) || 4}
-                      onChange={(e) => handleChange('borderRadius', `${e.target.value}px`)}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">px</InputAdornment>,
-                      }}
-                      size="small"
-                    />
-                    <Box display="flex" gap={2}>
-                      <TextField
-                        label="Horizontal Padding"
-                        type="number"
-                        value={parseInt(section.styles?.padding?.split(' ')[1]) || 24}
-                        onChange={(e) => {
-                          const verticalPadding = parseInt(section.styles?.padding?.split(' ')[0]) || 12;
-                          handleChange('padding', `${verticalPadding}px ${e.target.value}px`);
-                        }}
-                        InputProps={{
-                          endAdornment: <InputAdornment position="end">px</InputAdornment>,
-                        }}
-                        size="small"
-                      />
-                      <TextField
-                        label="Vertical Padding"
-                        type="number"
-                        value={parseInt(section.styles?.padding?.split(' ')[0]) || 12}
-                        onChange={(e) => {
-                          const horizontalPadding = parseInt(section.styles?.padding?.split(' ')[1]) || 24;
-                          handleChange('padding', `${e.target.value}px ${horizontalPadding}px`);
-                        }}
-                        InputProps={{
-                          endAdornment: <InputAdornment position="end">px</InputAdornment>,
-                        }}
-                        size="small"
-                      />
-                    </Box>
-                  </Box>
-                </Box>
-              </>
-            )}
-          </Box>
-        </AccordionDetails>
-      </Accordion>
-    );
-  };
-
-  const renderSection = (section, index) => {
-    return (
-      <Box key={index} sx={{ mb: 3 }}>
-        <Paper elevation={0} sx={{ p: 2, border: '1px solid', borderColor: 'divider' }}>
-          {/* Section Content */}
-          <Box mb={2}>
-            {section.type === 'text' && (
-              <ReactQuill
-                value={section.content}
-                onChange={(content) => handleSectionUpdate(index, content)}
-                theme="snow"
-              />
-            )}
-            
-            {section.type === 'image' && (
-              <Box textAlign="center">
-                {section.imageUrl ? (
-                  <img
-                    src={section.imageUrl}
-                    alt="Section"
-                    style={{ maxWidth: '100%', height: 'auto' }}
-                  />
-                ) : (
-                  <Button
-                    variant="outlined"
-                    component="label"
-                    startIcon={<ImageIcon />}
-                  >
-                    Upload Image
-                    <input
-                      type="file"
-                      hidden
-                      accept="image/*"
-                      onChange={(e) => handleImageChange(index, e.target.files[0])}
-                    />
-                  </Button>
-                )}
-              </Box>
-            )}
-            
-            {section.type === 'button' && (
-              <Box>
-                <TextField
-                  fullWidth
-                  label="Button Text"
-                  value={section.content}
-                  onChange={(e) => handleSectionUpdate(index, e.target.value)}
-                  sx={{ mb: 2 }}
-                />
-                <TextField
-                  fullWidth
-                  label="Button Link"
-                  value={section.link || ''}
-                  onChange={(e) => handleLinkChange(index, e.target.value)}
-                />
-              </Box>
-            )}
-          </Box>
-
-          {/* Style Controls */}
-          <StyleControls
-            section={section}
-            index={index}
-            onStyleChange={handleStyleChange}
-          />
-
-          {/* Section Actions */}
-          <Box display="flex" justifyContent="flex-end" gap={1} mt={2}>
-            <IconButton
-              size="small"
-              onClick={() => handleDeleteSection(index)}
-              color="error"
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        </Paper>
-      </Box>
-    );
-  };
-
   if (loading) {
     return (
       <Box
@@ -579,95 +248,32 @@ const Editor = () => {
       {/* Editor Section */}
       <Box sx={{ width: "66.666%", p: 4, overflowY: "auto" }}>
         <Paper elevation={0} sx={{ p: 3, mb: 4 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 3,
-            }}
-          >
-            <TextField
-              error={!!errors.title}
-              helperText={errors.title}
-              value={template.title}
-              onChange={handleTitleChange}
-              placeholder="Template Title"
-              variant="outlined"
-              fullWidth
-              sx={{ "& .MuiOutlinedInput-root": { fontSize: "1.5rem" } }}
-            />
-            <Box sx={{ display: "flex", gap: 2, ml: 2 }}>
-              <Button
-                startIcon={<ArrowBackIcon />}
-                onClick={() => navigate("/dashboard")}
-                color="inherit"
-              >
-                Cancel
-              </Button>
-              <Button
-                startIcon={<SaveIcon />}
-                onClick={handleSave}
-                variant="contained"
-                color="primary"
-              >
-                Save
-              </Button>
-            </Box>
-          </Box>
+          <EditorHeader
+            title={template.title}
+            errors={errors}
+            onTitleChange={handleTitleChange}
+            onSave={handleSave}
+            onCancel={() => navigate("/dashboard")}
+          />
 
-          {/* Error Alerts */}
-          {Object.entries(errors).map(
-            ([key, error]) =>
-              error && (
-                <Alert severity="error" sx={{ mb: 2 }} key={key}>
-                  {error}
-                </Alert>
-              )
-          )}
-
-          {/* Add Section Buttons */}
-          <Box sx={{ mb: 4 }}>
-            <Grid container spacing={2}>
-              <Grid item>
-                <Tooltip title="Add Text Section">
-                  <Button
-                    startIcon={<AddIcon />}
-                    onClick={() => handleAddSection(SECTION_TYPES.TEXT)}
-                    variant="outlined"
-                  >
-                    Add Text
-                  </Button>
-                </Tooltip>
-              </Grid>
-              <Grid item>
-                <Tooltip title="Add Image Section">
-                  <Button
-                    startIcon={<ImageIcon />}
-                    onClick={() => handleAddSection(SECTION_TYPES.IMAGE)}
-                    variant="outlined"
-                  >
-                    Add Image
-                  </Button>
-                </Tooltip>
-              </Grid>
-              <Grid item>
-                <Tooltip title="Add Button Section">
-                  <Button
-                    startIcon={<LinkIcon />}
-                    onClick={() => handleAddSection(SECTION_TYPES.BUTTON)}
-                    variant="outlined"
-                  >
-                    Add Button
-                  </Button>
-                </Tooltip>
-              </Grid>
-            </Grid>
-          </Box>
+          <AddSectionButtons onAddSection={handleAddSection} />
 
           {/* Sections */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            {template.sections.map((section, index) => renderSection(section, index))}
+            {template.sections.map((section, index) => (
+              <Section
+                key={index}
+                section={section}
+                index={index}
+                onUpdate={handleSectionUpdate}
+                onStyleChange={handleStyleChange}
+                onImageChange={handleImageChange}
+                onLinkChange={handleLinkChange}
+                onDelete={handleDeleteSection}
+                expandedStyles={expandedStyles}
+                onAccordionChange={handleAccordionChange}
+              />
+            ))}
           </Box>
 
           {/* Footer Section */}
