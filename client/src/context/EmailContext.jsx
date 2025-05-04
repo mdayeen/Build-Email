@@ -43,8 +43,6 @@ const emailReducer = (state, action) => {
         loading: false,
         error: null,
       };
-    case "SET_ERROR":
-      return { ...state, error: action.payload, loading: false };
     case "UPDATE_SECTION":
       const updatedTemplate = {
         ...state.currentTemplate,
@@ -87,8 +85,8 @@ const handleApiError = (error) => {
 
 export const EmailProvider = ({ children }) => {
   const [state, dispatch] = useReducer(emailReducer, initialState);
-  // const apiUrl = import.meta.env.VITE_API_URL;
-  const apiUrl = "https://ayeen.suhail.app/api";
+  const apiUrl = import.meta.env.VITE_API_URL;
+  // const apiUrl = "https://ayeen.suhail.app/api";
 
   // console.log("API URL:", apiUrl);
   // Debugging line
